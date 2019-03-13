@@ -1,0 +1,222 @@
+red=`tput setaf 1`
+green=`tput setaf 2`
+bold=`tput bold`
+reset=`tput sgr0`
+
+
+declare -a arr=(
+	"python2.7"
+	"libusb-1.0-0-dev"
+	"git"
+	"cifs-utils"
+	"autoconf"
+	"gnulib"
+	"flex"
+	"libfreetype6-dev"
+	"libfontconfig1-dev"
+	"libgstreamer0.10-0"
+	"libxml2-dev"
+	"libgstreamer-plugins-base0.10-dev"
+	"libsdl1.2-dev"
+	"libsdl-image1.2-dev"
+	"libsdl-ttf2.0-dev"
+	"libfreeimage-dev"
+	"libgtk2.0-dev"
+	"mwrap"
+	"libsdl-mixer1.2-dev"
+	"gcc-4.8"
+	"python2.7-dev"
+)
+
+echo "${green}${bold}## Installing required packages. ##${reset}";
+for i in "${arr[@]}"
+do
+	PKG_OK=$(dpkg-query -W --showformat='${Status}\n' -f='${Status} ${Version}\n' $i|grep "install ok installed")
+	if [ "" == "$PKG_OK" ]; then
+		echo "Checking $i => ${red}not installed${reset}"
+		echo "Installing $i"
+		if [ "$i" == "gcc-4.8" ]; then
+			sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+			sudo apt-get update
+			sudo apt-get install gcc-4.8
+			sudo apt-get install g++-4.8
+			sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 100
+			sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 50
+			sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 100
+			sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 50
+			sudo update-alternatives --install /usr/bin/cpp cpp-bin /usr/bin/cpp-4.8 100
+			sudo update-alternatives --install /usr/bin/cpp cpp-bin /usr/bin/cpp-7 50
+		else
+			sudo apt-get -qq --assume-yes install $i -qq > /dev/null
+		fi
+	else
+		echo "Checking $i => ${green}installed${reset}"
+	fi
+done
+sudo update-alternatives --set g++ /usr/bin/g++-4.8
+sudo update-alternatives --set gcc /usr/bin/gcc-4.8
+sudo update-alternatives --set cpp-bin /usr/bin/cpp-4.8
+
+
+echo "${green}${bold}## Checking libgstreamer library since it is not supported correctly in new versions of Ubuntu. ##${reset}";
+mkdir $HOME/Downloads/libgstreamer
+cd $HOME/Downloads/libgstreamer
+PKG_OK=$(dpkg-query -W --showformat='${Status}\n' -f='${Status} ${Version}\n' libgstreamer0.10-0|grep "install ok installed")
+PKG_OK2=$(dpkg-query -W --showformat='${Status}\n' -f='${Status} ${Version}\n' libgstreamer-plugins-base0.10-dev|grep "install ok installed")
+
+if [ "" == "$PKG_OK" ] || [ "" == "$PKG_OK2" ]; then
+	echo "${red}${bold}Not installed.${reset} Install from Ubuntu servers.";
+	wget http://security.ubuntu.com/ubuntu/pool/main/g/gst-plugins-base0.10/libgstreamer-plugins-base0.10-0_0.10.36-1.1ubuntu2.1_amd64.deb
+	wget http://fr.archive.ubuntu.com/ubuntu/pool/universe/g/gstreamer0.10/libgstreamer0.10-0_0.10.36-1.5ubuntu1_amd64.deb
+	wget http://fr.archive.ubuntu.com/ubuntu/pool/universe/g/gstreamer0.10/libgstreamer0.10-dev_0.10.36-1.5ubuntu1_amd64.deb
+	wget http://security.ubuntu.com/ubuntu/pool/main/g/gst-plugins-base0.10/libgstreamer-plugins-base0.10-dev_0.10.36-1.1ubuntu2.1_amd64.deb
+	wget http://fr.archive.ubuntu.com/ubuntu/pool/universe/g/gstreamer0.10/gir1.2-gstreamer-0.10_0.10.36-1.5ubuntu1_amd64.deb
+	wget http://security.ubuntu.com/ubuntu/pool/main/g/gst-plugins-base0.10/gir1.2-gst-plugins-base-0.10_0.10.36-1.1ubuntu2.1_amd64.deb
+
+	sudo dpkg -i gir1.2-gst-plugins-base-0.10_0.10.36-1.1ubuntu2.1_amd64.deb
+	sudo dpkg -i gir1.2-gstreamer-0.10_0.10.36-1.5ubuntu1_amd64.deb
+	sudo dpkg -i libgstreamer0.10-0_0.10.36-1.5ubuntu1_amd64.deb
+	sudo dpkg -i libgstreamer0.10-dev_0.10.36-1.5ubuntu1_amd64.deb
+	sudo dpkg -i libgstreamer-plugins-base0.10-0_0.10.36-1.1ubuntu2.1_amd64.deb
+	sudo dpkg -i libgstreamer-plugins-base0.10-dev_0.10.36-1.1ubuntu2.1_amd64.deb
+	PKG_OK=$(dpkg-query -W --showformat='${Status}\n' -f='${Status} ${Version}\n' libgstreamer0.10-0|grep "install ok installed")
+	PKG_OK2=$(dpkg-query -W --showformat='${Status}\n' -f='${Status} ${Version}\n' libgstreamer-plugins-base0.10-dev|grep "install ok installed")
+	if [ "" == "$PKG_OK" ] || [ "" == "$PKG_OK2" ]; then
+		echo "${red}${bold}Could not install libgstream0.10 package.${reset}";
+		exit 1
+	else
+		echo "${green}${bold}Installed${reset}";
+	fi
+else
+	echo "libgstreamer was already correctly installed. Perfect!"
+fi
+rm -rf $HOME/Downloads/libgstreamer
+
+
+echo "${green}${bold}## Download CNBI packages ##${reset}"
+installationSource=`Github`
+while true; do
+		echo "Do you wish to install this program with 1. Github or 2. C4Science?"
+    read -p "1 or 2? " yn
+    case $yn in
+        [1]* ) installationSource="Github"; break;;
+        [2]* ) installationSource="C4Science"; break;;
+        * ) echo "Please answer 1 for Github or 2 for C4Science.";;
+    esac
+done
+if [ "$installationSource" == "Github" ]; then
+	declare -a arr=("xdffileio" "eegdev" "drawtk" "rtfilter" "mcpanel" "eegview" "lpttrigger" "tobicore" "eegc" "cnbitkloop" "cnbitkextra")
+	echo "Github username and password are necessary to download CNBI loop git folders."
+	read -p "Username: " username
+	read -s -p "Password: " password
+	echo "${green}${bold}Download sources from Github in $HOME/dev/${reset}";
+	mkdir $HOME/dev
+	cd $HOME/dev
+	for directory in "${arr[@]}"
+	do
+		echo "${green}${bold}Downloading directory " $directory "${reset}"
+		git clone https://$username:$passwordC4science@github.com/millanlaboratory/${directory}
+	done
+	git clone https://$username:$password@github.com/diffusion/shambcifesdata.git
+else
+	echo "C4science username and password are necessary to download CNBI loop git folders."
+	read -p "Username: " usernameC4science
+	read -s -p "Password: " passwordC4science
+	echo "${green}${bold}Download sources from C4Science in $HOME/dev/${reset}";
+	mkdir $HOME/dev
+	cd $HOME/dev
+	git clone https://$usernameC4science:$passwordC4science@c4science.ch/source/xdffileio.git
+	git clone https://$usernameC4science:$passwordC4science@c4science.ch/source/eegdev.git
+	git clone https://$usernameC4science:$passwordC4science@c4science.ch/source/drawtk.git
+	git clone https://$usernameC4science:$passwordC4science@c4science.ch/source/rtfilter.git
+	git clone https://$usernameC4science:$passwordC4science@c4science.ch/source/mcpanel.git
+	git clone https://$usernameC4science:$passwordC4science@c4science.ch/source/eegview.git
+	git clone https://$usernameC4science:$passwordC4science@c4science.ch/source/lpttrigger.git
+	git clone https://$usernameC4science:$passwordC4science@c4science.ch/source/tobicore.git
+	git clone https://$usernameC4science:$passwordC4science@c4science.ch/diffusion/827/eegc.git
+	git clone https://$usernameC4science:$passwordC4science@c4science.ch/source/cnbitkloop.git
+fi
+
+
+echo "${green}${bold}## Download and Install MATLAB ##${reset}"
+if command -v matlab >/dev/null 2>&1; then
+	echo "${gren}${bold}Matlab found.${reset}"
+else
+	echo "${red}${bold}Matlab not found. Installing Matlab.${reset}";
+	echo "Gaspar username and password are necessary to download MATLAB and gtec drivers."
+	read -p "Username for Gaspar: " usernameGaspar
+	read -s -p "Password for Gaspar: " passwordGaspar
+	sudo mount -t cifs -o username=$usernameGaspar,password=$passwordGaspar //olympe.epfl.ch/students-matlab/linux/Matlab9.3 /mnt/;
+	cd /mnt/;
+	sudo ./install;
+	sudo umount -a -t cifs -l
+fi
+cd $HOME
+
+echo "${green}${bold}## Installing gTec drivers ##${reset}";
+sudo mkdir /mnt/cnbi-commun
+sudo mount -t cifs -o username=$usernameGaspar,password=$passwordGaspar,domain=Intranet,iocharset=utf8,file_mode=0777,dir_mode=0777,nodfs //sti1files.epfl.ch/cnbi/cnbi-commun /mnt/cnbi-commun/
+cp -r /mnt/cnbi-commun/software/third/gtec/g.USBamp_Linux_C_API/g.USBamp_Linux_C_API_1.14.02_Linux64 Documents/
+cp -r /mnt/cnbi-commun/_INBOX/Software/libboost1.54-gusbamp Documents/
+cd Documents/libboost1.54-gusbamp
+sudo dpkg -i *.deb
+cd ../g.USBamp_Linux_C_API_1.14.02_Linux64
+sudo dpkg -i *.deb
+
+echo "${green}${bold}## Install CNBI packages ##${reset}"
+while true; do
+	echo "Do you want to recompile all modules? yes or no"
+	recompile=true
+	read -p "y or n? " yn
+	case $yn in
+		[y]* ) recompile=true; break;;
+		[n]* ) recompile=false; break;;
+		* ) echo "Please answer 1 for Github or 2 for C4Science.";;
+	esac
+done
+cd $HOME/dev
+declare -a arr=("xdffileio" "eegdev" "drawtk" "rtfilter" "mcpanel" "eegview" "lpttrigger" "tobicore" "eegc" "cnbitkloop" "cnbitkextra")
+for directory in "${arr[@]}"
+do
+	echo "${green}${bold}Moving to directory " $directory "${reset}"
+	cd $directory || { echo "command failed"; exit 1; }
+	git pull
+	if [ $directory == "eegc" ]; then
+		sudo ./eegc3_install.sh
+	else
+		if [ $directory == "tobicore" ]; then
+			git checkout origin/devel
+		fi
+
+		if [ ! -f autogen.sh ]; then
+		    echo "${bold}Autogen file not found. Switching to autoconf installation.${reset}"
+		    autoreconf -if > /dev/null || { echo "command failed"; exit 1; }
+		else
+			echo "${bold}Autogen configuration files.${reset}"
+			./autogen.sh || { echo "command failed"; exit 1; }
+		fi
+		echo "${bold}Autogen make files.${reset}"
+		./configure --prefix=/usr/ --silent || { echo "command failed"; exit 1; }
+		echo "${bold}Compile program.${reset}"
+		if [ recompile ]; then
+			sudo make uninstall
+			make clean
+		fi
+		make -j 4 --quiet > /dev/null || { echo "command failed"; exit 1; }
+		echo "${bold}Install program.${reset}"
+		sudo make --quiet install > /dev/null || { echo "command failed"; exit 1; }
+	fi
+	cd ..
+done
+
+echo "${green}${bold}## Setup eegdev ##${reset}"
+cd $HOME/dev/eegdev/
+sudo make install-usb-plugdev
+
+cp /usr/etc/cnbiloop $HOME/.cnbiloop
+cp /usr/etc/cnbitk/cnbiloop $HOME/.cnbiloop
+sudo usermod -a -G dialout $USER
+sudo usermod -a -G plugdev $USER
+
+
+echo "${green}${bold}INSTALLATION COMPLETE${reset}"
