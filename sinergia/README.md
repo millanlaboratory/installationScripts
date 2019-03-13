@@ -44,7 +44,7 @@ The script will **automatically**:
 4. Download lab packages/libraries/modules from github or c4science
 5. Donwload and install MATLABR2017b
 6. Download and install gTec drivers
-7. Install `Loop` packages see [Recording Loop](#Loop) for more details
+7. Install `Loop` packages see [Recording Loop](https://github.com/millanlaboratory/installationScripts/tree/master/loop#Loop) for more details
 8. Install `FESControl` module and its library libjsoncpp
 9. Install `Patient-Allocator`
 10. Setup access to usb port for FES and USBamp
