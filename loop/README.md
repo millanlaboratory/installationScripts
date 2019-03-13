@@ -1,14 +1,7 @@
-# Lab Installation Scripts
-
-## How to create an installation script
-
-## Available installation scripts
-* [Recording Loop](#Loop)
-* [Sinergia Project](https://github.com/millanlaboratory/installationScripts/tree/master/sinergia#Sinergia)
-
 ## <span id="Loop"> Loop </span>
-**OS tested: Ubuntu 14.04 LTS & 16.04 LTS (laptop & desktop), Ubuntu 18.04 LTS & 19.04 (desktop only)**
-**Requirements:**
+**OS tested**: Ubuntu 14.04 LTS & 16.04 LTS (laptop & desktop), Ubuntu 18.04 LTS & 19.04 (desktop only)
+**Duration**: 1h30min if MATLAB was not installed beforehand, 15min otherwise.
+**After installation, these packages will be installed:**
 * python2.7
 * libusb-1.0-0-dev
 * git
