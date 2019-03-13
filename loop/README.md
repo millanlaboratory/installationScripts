@@ -4,13 +4,20 @@
 **Duration**: 1h30min if MATLAB was not installed beforehand, 15min otherwise.
 
 **After installation, these packages will be installed:**
-python2.7
-libusb-1.0-0-dev
-git
-cifs-utils
 autoconf
-gnulib
+cifs-utils
+[cnbitkextra](https://github.com/millanlaboratory/cnbitkextra),
+[cnbitkloop](https://github.com/millanlaboratory/cnbitkloop),
+[cnbi-smrtrain](https://github.com/millanlaboratory/cnbi-smrtrain),
+[drawtk](https://github.com/millanlaboratory/drawtk),
+[eegc](https://github.com/millanlaboratory/eegc),
+[eegdev](https://github.com/millanlaboratory/eegdev),
+[eegview](https://github.com/millanlaboratory/eegview),
 flex
+gcc-4.8
+git
+gnulib
+libusb-1.0-0-dev
 libfreetype6-dev
 libfontconfig1-dev
 libgstreamer0.10-0
@@ -21,9 +28,14 @@ libsdl-image1.2-dev
 libsdl-ttf2.0-dev
 libfreeimage-dev
 libgtk2.0-dev
+[lpttrigger](https://github.com/millanlaboratory/lpttrigger),
+[mcpanel](https://github.com/millanlaboratory/mcpanel),
 mwrap
-gcc-4.8
 MATLAB R2017b
+python2.7
+[rtfilter](https://github.com/millanlaboratory/rtfilter),
+[tobicore](https://github.com/millanlaboratory/tobicore),
+[xdffileio](https://github.com/millanlaboratory/xdffileio)
 
 
 ### Installation process
