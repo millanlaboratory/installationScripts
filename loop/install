@@ -115,9 +115,9 @@ if [ "$installationSource" == "Github" ]; then
 	for directory in "${arr[@]}"
 	do
 		echo "${green}${bold}Downloading directory " $directory "${reset}"
-		git clone https://$username:$passwordC4science@github.com/millanlaboratory/${directory}
+		git clone https://github.com/millanlaboratory/${directory}
 	done
-	git clone https://$username:$password@github.com/diffusion/shambcifesdata.git
+	#git clone https://$username:$password@github.com/diffusion/shambcifesdata.git
 else
 	echo "C4science username and password are necessary to download CNBI loop git folders."
 	read -p "Username: " usernameC4science
