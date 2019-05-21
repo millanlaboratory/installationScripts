@@ -106,9 +106,9 @@ while true; do
 done
 if [ "$installationSource" == "Github" ]; then
 	declare -a arr=("xdffileio" "eegdev" "drawtk" "rtfilter" "mcpanel" "eegview" "lpttrigger" "tobicore" "eegc" "cnbitkloop" "cnbitkextra")
-	echo "Github username and password are necessary to download CNBI loop git folders."
-	read -p "Username: " username
-	read -s -p "Password: " password
+	#echo "Github username and password are necessary to download CNBI loop git folders."
+	#read -p "Username: " username
+	#read -s -p "Password: " password
 	echo "${green}${bold}Download sources from Github in $HOME/dev/${reset}";
 	mkdir $HOME/dev
 	cd $HOME/dev
